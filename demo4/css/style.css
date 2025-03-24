@@ -1,0 +1,342 @@
+/* 全局样式定义 */
+:root {
+    --primary-color: #3B82F6;    /* 主要颜色 - 蓝色 */
+    --secondary-color: #1E40AF;  /* 次要颜色 - 深蓝色 */
+    --text-color: #1F2937;       /* 文本颜色 - 深灰色 */
+    --bg-color: #F3F4F6;         /* 背景颜色 - 浅灰色 */
+}
+
+/* 基础页面样式 */
+body {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: var(--text-color);
+    line-height: 1.6;
+    scroll-behavior: smooth;     /* 平滑滚动效果 */
+}
+
+/* 淡入动画效果 - 用于元素出现时的渐入效果 */
+.fade-in {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+/* 向上淡入动画定义 */
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* 呼吸效果动画 - 用于首页文字的呼吸效果 */
+.breathing-text {
+    animation: breathing 4s ease-in-out infinite;
+}
+
+/* 呼吸动画定义 - 透明度和缩放的循环变化 */
+@keyframes breathing {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+    }
+    30% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0.9;
+        transform: translateY(0) scale(0.96);
+    }
+}
+
+/* 文字序列动画容器 - 控制子元素的序列动画 */
+.text-sequence > * {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 第一个元素的序列动画设置 - 0.2秒延迟 */
+.text-sequence > *:nth-child(1) {
+    animation: sequenceIn 0.8s ease forwards 0.2s;
+}
+
+/* 第二个元素的序列动画设置 - 0.8秒延迟 */
+.text-sequence > *:nth-child(2) {
+    animation: sequenceIn 0.8s ease forwards 0.8s;
+}
+
+/* 第三个元素的序列动画设置 - 1.4秒延迟 */
+.text-sequence > *:nth-child(3) {
+    animation: sequenceIn 0.8s ease forwards 1.4s;
+}
+
+/* 序列动画定义 - 从下方淡入 */
+@keyframes sequenceIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 导航栏样式设置 */
+header {
+    background-color: rgba(255, 255, 255, 0.95); /* 半透明白色背景 */
+    backdrop-filter: blur(8px);                  /* 背景模糊效果 */
+    -webkit-backdrop-filter: blur(8px);          /* Safari浏览器支持 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);   /* 轻微阴影 */
+}
+
+/* 导航栏隐藏状态 - 向上滑出屏幕 */
+.nav-hide {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+/* 导航栏显示状态 - 正常显示 */
+.nav-show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 导航链接样式 */
+.nav-link {
+    position: relative;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+    color: var(--text-color);
+}
+
+/* 导航链接悬停效果 */
+.nav-link:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--primary-color);
+}
+
+/* 品牌链接样式 - 网站标志/标题链接 */
+.brand-link {
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+/* 品牌链接悬停效果 */
+.brand-link:hover {
+    color: var(--primary-color);
+}
+
+/* 项目卡片基础样式 */
+.project-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 项目卡片悬停效果 - 上移并增加阴影 */
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 技能条容器样式 */
+.skill-bar {
+    height: 8px;
+    background: var(--bg-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* 技能进度条样式 - 动画变化宽度 */
+.skill-progress {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 4px;
+    width: 0;          /* 初始宽度为0，通过JS动态设置 */
+    transition: width 1s ease;
+}
+
+/* 项目图片占位样式 - 项目1主图背景 */
+[src*="project1/main.jpg"] {
+    background: linear-gradient(45deg, #4F46E5, #7C3AED);
+}
+
+/* 项目图片占位样式 - 项目1详情图背景 */
+[src*="project1/detail"] {
+    background: linear-gradient(45deg, #6366F1, #8B5CF6);
+}
+
+/* 项目图片占位样式 - 项目2主图背景 */
+[src*="project2/main.jpg"] {
+    background: linear-gradient(45deg, #10B981, #3B82F6);
+}
+
+/* 项目图片占位样式 - 项目2详情图背景 */
+[src*="project2/detail"] {
+    background: linear-gradient(45deg, #34D399, #60A5FA);
+}
+
+/* 项目图片占位样式 - 项目3主图背景 */
+[src*="project3/main.jpg"] {
+    background: linear-gradient(45deg, #F59E0B, #EF4444);
+}
+
+/* 项目图片占位样式 - 项目3详情图背景 */
+[src*="project3/detail"] {
+    background: linear-gradient(45deg, #FBBF24, #F87171);
+}
+
+/* 项目图片占位样式 - 项目4主图背景 */
+[src*="project4/main.jpg"] {
+    background: linear-gradient(45deg, #EC4899, #8B5CF6);
+}
+
+/* 项目图片占位样式 - 项目4详情图背景 */
+[src*="project4/detail"] {
+    background: linear-gradient(45deg, #F472B6, #A78BFA);
+}
+
+/* 项目图片通用样式设置 */
+[src*="project"] {
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 项目图片标题覆盖层 - 在图片底部显示标题 */
+[src*="project"]::after {
+    content: attr(alt);            /* 使用图片的alt属性作为标题 */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+    color: white;
+    font-size: 0.875rem;
+}
+
+/* 响应式导航栏设置 - 小屏幕样式 */
+@media (max-width: 768px) {
+    /* 小屏幕时默认隐藏导航菜单 */
+    .nav-menu {
+        display: none;
+    }
+    
+    /* 小屏幕时导航菜单激活状态 - 竖直排列 */
+    .nav-menu.active {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 图片预览模态框样式 */
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* 深色半透明背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 图片预览激活状态 */
+.lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 图片预览内容容器 */
+.lightbox-content {
+    max-width: 90%;
+    max-height: 90%;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+/* 图片预览激活状态的内容容器 */
+.lightbox.active .lightbox-content {
+    transform: scale(1);
+}
+
+/* 图片预览中的图片样式 */
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;       /* 最大高度为视口高度的90% */
+    object-fit: contain;    /* 保持原比例完整显示 */
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* 项目详情页入场动画初始状态 */
+.project-details-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* 项目详情页入场动画激活状态 */
+.project-details-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.5s ease;
+}
+
+/* 项目图片悬停效果 */
+.project-image {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+/* 项目图片悬停状态 - 放大并增加阴影 */
+.project-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 项目展示区块标题样式 - 初始隐藏状态 */
+.section-title {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+/* 项目展示区块标题显示状态 */
+.section-title.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 轮播容器初始样式 - 隐藏状态 */
+.swiper-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+/* 轮播容器显示状态 */
+.swiper-container.show {
+    opacity: 1;
+    transform: translateY(0);
+} 

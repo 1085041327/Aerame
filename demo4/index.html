@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人作品集 - 全栈开发者 & 活动策划师</title>
+    <!-- 引入Tailwind CSS框架 -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- 引入自定义样式表 -->
+    <link href="css/style.css" rel="stylesheet">
+    <!-- 引入组件加载JS和导航栏JS -->
+    <script src="js/loadComponents.js"></script>
+    <script src="js/navbar.js"></script>
+</head>
+<body>
+    <!-- 导航栏和联系方式弹窗会通过loadComponents.js动态加载 -->
+
+    <!-- 首页全屏展示区 - 渐变背景和垂直居中布局 -->
+    <section class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
+        <!-- 文本内容容器 - 居中排列的白色文本，应用序列动画 -->
+        <div class="text-center text-white text-sequence">
+            <!-- 主标题 - 带呼吸动画效果 -->
+            <h1 class="text-5xl font-bold mb-4 breathing-text">全栈开发者 & 活动策划师</h1>
+            <!-- 副标题/描述 - 带呼吸动画效果 -->
+            <p class="text-xl mb-8 breathing-text">用代码构建梦想，用创意策划精彩</p>
+            <!-- 查看作品按钮 - 白底蓝字，带悬停效果和呼吸动画 -->
+            <a href="projects.html" class="bg-white text-blue-600 px-8 py-3 rounded-full hover:bg-opacity-90 transition breathing-text inline-block">查看作品</a>
+        </div>
+    </section>
+    
+    <!-- 引入主要JavaScript文件 -->
+    <script src="js/main.js"></script>
+</body>
+</html> 

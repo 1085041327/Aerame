@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目详情 - 个人作品集</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <!-- 引入组件加载JS -->
+    <script src="js/loadComponents.js"></script>
+    <script src="js/navbar.js"></script>
+    <style>
+        /* 添加图片查看器样式 */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-viewer.active {
+            display: flex;
+        }
+
+        .image-viewer img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .image-viewer .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .project-image {
+            cursor: zoom-in;
+        }
+
+        /* 调整主图显示大小 */
+        .main-image {
+            max-height: 400px;
+            width: 100%;
+            object-fit: cover;
+            object-position: top;
+            margin-bottom: 2rem;
+            transition: transform 0.5s ease;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+        
+        /* 调整详情图网格布局和大小 */
+        .detail-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .detail-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: top;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .detail-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* 新增呼吸感和视觉区分度的样式 */
+        .project-title {
+            position: relative;
+            display: inline-block;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-category {
+            transition: all 0.3s ease;
+        }
+        
+        .project-category:hover {
+            transform: translateX(5px);
+        }
+
+        /* 为不同板块添加特色样式 */
+        .section-title {
+            position: relative;
+            font-weight: 700;
+            margin-bottom: -1.50rem;
+            padding-bottom: 1.25rem;
+            color: #1F2937;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #3B82F6, #3B82F6);
+            border-radius: 3px;
+        }
+
+        .software-section .section-title::after {
+            background: linear-gradient(to right, #3B82F6, #60A5FA);
+        }
+
+        .event-section .section-title::after {
+            background: linear-gradient(to right, #8B5CF6, #C084FC);
+        }
+
+        /* 统一项目详情卡片样式 */
+        .info-section {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border-top: 4px solid transparent;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .info-section .section-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .software-section.info-section {
+            border-color: #3B82F6;
+        }
+
+        .event-section.info-section {
+            border-color: #8B5CF6;
+        }
+
+        .info-card {
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border-top: 4px solid transparent;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .software-section.info-card {
+            border-color: #3B82F6;
+        }
+
+        .event-section.info-card {
+            border-color: #8B5CF6;
+        }
+
+        /* 项目成果卡片样式 */
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: #F3F4F6;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: #EEF2FF;
+            transform: translateX(5px);
+        }
+
+        .feature-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(8px);
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0.5rem;
+            left: 0;
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background: #3B82F6;
+        }
+
+        .software-section .feature-item::before {
+            background: #3B82F6;
+        }
+
+        .event-section .feature-item::before {
+            background: #8B5CF6;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fadeInUp {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+
+        /* 右侧文字板块样式优化 */
+        .right-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* 内容均匀分布 */
+            height: 100%; /* 使用100%高度而不是固定高度 */
+            padding-right: 0; /* 移除滚动条空间 */
+        }
+
+        /* 移除滚动条相关样式 */
+        .right-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            height: auto; /* 自适应高度 */
+            margin-bottom: 16px;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+            height: 100%; /* 使内容填充整个区域 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 垂直居中内容 */
+        }
+
+        /* 使左右两侧内容底部对齐 */
+        .project-content-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            align-items: start; /* 顶部对齐 */
+        }
+
+        .left-content, .right-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* 确保两侧高度一致 */
+        }
+
+        /* 让左侧四张详情图的容器固定高度，确保与右侧内容对齐 */
+        .detail-images-container {
+            margin-top: 1rem;
+            flex-grow: 1; /* 允许增长以填充可用空间 */
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        /* 调整底部与右侧对齐 */
+        .bottom-section {
+            margin-top: 2rem;
+        }
+        
+        /* 中等屏幕特定样式 - 解决左侧图片与右侧文字底部不对齐的问题 */
+        @media (min-width: 769px) and (max-width: 1279px) {
+            /* 使用flexbox布局确保对齐 */
+            .project-content-grid {
+                align-items: stretch; /* 确保两侧拉伸至相同高度 */
+            }
+            
+            /* 保持左侧内容区域大小不变 */
+            .left-content {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+            
+            /* 主图保持原有样式 */
+            .main-image {
+                margin-bottom: 1.5rem;
+            }
+            
+            /* 确保详情图容器保持2x2网格布局 */
+            .detail-images-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-top: 0.5rem;
+            }
+            
+            /* 右侧内容调整为两个部分：前两个板块在上方与左侧小图对齐，第三个板块在下方 */
+            .right-content {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* 前两个板块放在一个容器中，并设置高度使其底部与左侧小图底部对齐 */
+            .top-sections-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start; /* 从顶部开始排列，不再均匀分布 */
+                min-height: calc(400px + 200px + 3.5rem); /* 从固定高度改为最小高度 */
+                max-height: none; /* 移除最大高度限制 */
+                overflow-y: visible; /* 允许内容超出容器 */
+            }
+            
+            /* 调整信息板块内边距和间距，使内容更紧凑 */
+            .info-section .section-content {
+                padding: 1.25rem;
+            }
+            
+            /* 调整第一个信息区块的边距 */
+            #projectDescriptionSection {
+                margin-bottom: 1rem;
+            }
+            
+            /* 确保右侧内容区域可以根据内容自动调整高度 */
+            .right-content {
+                height: auto;
+                min-height: 100%;
+            }
+            
+            /* 第三个板块（项目成果）放在前两个板块下方 */
+            #projectResultsSection {
+                margin-top: 2rem;
+            }
+            
+            /* 调整信息区块内的文字大小和间距 */
+            .section-title {
+                font-size: 1.5rem;
+                margin-bottom: -1.75rem;
+                padding-bottom: 1rem;
+            }
+            
+            /* 调整特性项目的间距和文字大小 */
+            .feature-item {
+                margin-bottom: 0.5rem;
+                font-size: 1.00rem;
+                line-height: 1.4;
+            }
+            
+            /* 确保项目描述区域能够显示更多内容 */
+            #projectDescription, #projectFeatures {
+                margin-top: -0.25rem;
+            }
+            
+            /* 调整结果项的间距 */
+            .result-item {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+                font-size: 1.00rem;
+            }
+
+            /* 优化信息卡片样式 */
+            .info-section {
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                height: auto; /* 自适应高度 */
+            }
+            
+            /* 调整信息区块的转换效果，避免内容被截断 */
+            .info-section:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+            }
+            
+            /* 调整卡片内部的内容间距 */
+            .info-section .section-content {
+                padding: 1.1rem;
+            }
+        }
+        
+        /* 移动端适配样式 */
+        @media (max-width: 768px) {
+            /* 移动端项目内容网格布局调整 */
+            .project-content-grid {
+                gap: 1rem; /* 减小间距 */
+            }
+            
+            /* 移动端上左右内容的调整 */
+            .left-content, .right-content {
+                grid-column: span 12 !important; /* 强制占满整行 */
+            }
+            
+            /* 左侧内容与右侧内容的间距 */
+            .left-content {
+                margin-bottom: 2rem;
+            }
+            
+            /* 详情图容器在移动端的高度调整 */
+            .detail-images-container {
+                height: auto; /* 自适应高度 */
+            }
+            
+            /* 调整信息卡片之间的间距 */
+            .info-section {
+                margin-bottom: 1rem;
+            }
+            
+            /* 项目标题在移动端的大小调整 */
+            .project-title {
+                font-size: 2rem;
+            }
+
+            /* 在移动端移除顶部区域容器的特殊样式 */
+            .top-sections-container {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏和联系方式弹窗会通过loadComponents.js动态加载 -->
+
+    <!-- 添加图片查看器 -->
+    <div id="imageViewer" class="image-viewer">
+        <button class="close-btn">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="viewerImage" src="" alt="图片预览">
+    </div>
+
+    <!-- 项目详情内容 -->
+    <main class="pt-20">
+        <div class="container mx-auto px-6 py-12">
+            <!-- 项目基本信息布局 -->
+            <div class="mb-8 animate-fadeInUp">
+                <h1 id="projectTitle" class="project-title">项目标题</h1>
+                <div class="flex items-center space-x-4 text-gray-600 mb-4">
+                    <span id="projectCategory" class="project-category bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm shadow-sm hover:shadow">项目类别</span>
+                    <span id="projectDate" class="text-sm">完成时间：2024年</span>
+                </div>
+                
+                <!-- 项目图片展示和描述的新布局 -->
+                <div class="project-content-grid">
+                    <!-- 左侧：主图和四张详情图 -->
+                    <div class="left-content col-span-12 md:col-span-6">
+                        <!-- 主图 -->
+                        <img id="projectMainImage" src="" alt="项目主图" class="w-full h-auto rounded-lg shadow-lg project-image main-image transition transform hover:scale-105 duration-500">
+                        
+                        <!-- 四张详情图 -->
+                        <div class="detail-images-container">
+                            <img id="projectImage1" src="" alt="项目细节1" class="w-full aspect-video object-cover rounded-lg shadow-md project-image detail-image">
+                            <img id="projectImage2" src="" alt="项目细节2" class="w-full aspect-video object-cover rounded-lg shadow-md project-image detail-image">
+                            <img id="projectImage3" src="" alt="项目细节3" class="w-full aspect-video object-cover rounded-lg shadow-md project-image detail-image">
+                            <img id="projectImage4" src="" alt="项目细节4" class="w-full aspect-video object-cover rounded-lg shadow-md project-image detail-image">
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：项目描述、技术特点和项目成果 -->
+                    <div class="right-content col-span-12 md:col-span-6">
+                        <!-- 前两个板块放在一个容器中，中等屏幕时使其底部与左侧小图对齐 -->
+                        <div class="top-sections-container">
+                            <!-- 项目描述 -->
+                            <div id="projectDescriptionSection" class="info-section animate-fadeInUp delay-100">
+                                <div class="section-content">
+                                    <h2 class="section-title text-2xl">项目描述</h2>
+                                    <div id="projectDescription" class="prose max-w-none">
+                                        <!-- 项目描述将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 技术特点 -->
+                            <div id="projectFeaturesSection" class="info-section animate-fadeInUp delay-200">
+                                <div class="section-content">
+                                    <h2 class="section-title text-2xl">技术特点</h2>
+                                    <div id="projectFeatures" class="space-y-4">
+                                        <!-- 技术特点将通过JavaScript动态插入 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 项目成果 - 独立于前两个板块，在中等屏幕时放在下方 -->
+                        <div id="projectResultsSection" class="info-section animate-fadeInUp delay-300">
+                            <div class="section-content">
+                                <h2 class="section-title text-2xl">项目成果</h2>
+                                <div id="projectResults" class="prose max-w-none">
+                                    <!-- 项目成果将通过JavaScript动态插入 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部项目信息和相关链接 - 左右并排 -->
+            <div class="grid md:grid-cols-2 gap-8 mt-12 bottom-section">
+                <!-- 左侧：项目信息卡片 -->
+                <div id="projectInfoSection" class="info-card p-6 animate-fadeInUp delay-400">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">项目信息</h3>
+                    <dl class="space-y-4">
+                        <div class="transition duration-300 hover:translate-x-2">
+                            <dt class="text-gray-600">客户</dt>
+                            <dd id="projectClient" class="font-medium">待更新</dd>
+                        </div>
+                        <div class="transition duration-300 hover:translate-x-2">
+                            <dt class="text-gray-600">完成时间</dt>
+                            <dd id="projectCompletionDate" class="font-medium">待更新</dd>
+                        </div>
+                        <div class="transition duration-300 hover:translate-x-2">
+                            <dt class="text-gray-600">项目角色</dt>
+                            <dd id="projectRole" class="font-medium">待更新</dd>
+                        </div>
+                        <div class="transition duration-300 hover:translate-x-2">
+                            <dt class="text-gray-600">技术栈</dt>
+                            <dd id="projectTechStack" class="font-medium">待更新</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- 右侧：相关链接卡片 -->
+                <div id="projectLinksSection" class="info-card p-6 animate-fadeInUp delay-500">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">相关链接</h3>
+                    <div id="projectLinks" class="space-y-3">
+                        <!-- 相关链接将通过JavaScript动态插入 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚会通过loadComponents.js动态加载 -->
+
+    <script>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('id');
+
+        // 项目数据
+        const projectsData = {
+            '1': {
+                title: '智慧农业管理平台',
+                category: '软件开发',
+                date: '2024年8月',
+                mainImage: 'assets/project1/主图.png',
+                images: [
+                    'assets/project1/详情图1.png',
+                    'assets/project1/详情图2.png',
+                    'assets/project1/详情图3.png',
+                    'assets/project1/详情图4.png'
+                ],
+                description: [
+                    '这是一个面向现代农业管理需求开发的综合管理平台。系统采用Web端和微信公众号双端接入的方式，为农业生产管理提供全方位的数字化解决方案。',
+                    '平台整合工业摄像机接口远程调用，实现农作物生长监测、农事活动管理、农产品溯源等核心功能。通过数据可视化展示和智能分析，帮助管理者实现科学决策和精准管理。',
+                    '实时拍摄照片形成私有数据库，通义千问大模型进行分析，建立病虫害知识库，内容包括概述、病原、症状、发生规律、防治方法。',
+                    
+                ],
+                features: [
+                    'Web端响应式界面设计，支持多端访问',
+                    '微信公众号集成，实现移动端便捷操作',
+                    '远程调用工业摄像头',
+                    '农事活动智能排程和提醒',
+                    '农产品全程溯源系统',
+                    '数据可视化分析和决策支持'
+                ],
+                results: `
+                    <ul>
+                        <li>平台已成功应用于多个农业基地，覆盖耕地面积超过1000亩</li>
+                        <li>工业摄像头接口实现远程调用超1000次</li>
+                        <li>农事管理效率提升50%，生产成本降低30%</li>
+                        <li>微信公众号关注用户超过500人</li>
+                    </ul>
+                `,
+                client: '四川农业大学农学院',
+                completionDate: '2024年8月',
+                role: '全栈开发工程师',
+                techStack: 'Vue.js, Spring Boot, MySQL, 通义千问大模型调适',
+                links: [
+                    { text: '系统演示', url: '#' },
+                    { text: '微信公众号', url: '#' },
+                    { text: '技术文档', url: '#' }
+                ]
+            },
+            '2': {
+                title: '农产品电商及土地认养小程序',
+                category: '移动开发',
+                date: '2024年11月',
+                mainImage: 'assets/project2/盟定.png',
+                images: [
+                    'assets/project2/详情图1.png',
+                    'assets/project2/详情图2.png',
+                    'assets/project2/详情图3.png',
+                    'assets/project2/详情图4.png'
+                ],
+                description: [
+                    '这是一个面向农产品销售和土地认养的综合性电商小程序。平台为农户提供农产品直销渠道，同时为城市用户提供土地认养服务，打造"农场到餐桌"的全新消费模式。',
+                    '项目采用微信小程序云开发技术，实现了农产品展示、在线支付、物流跟踪、土地认养管理等核心功能。通过摄像头实时拍摄和图文动态，用户可以实时了解认养土地的农作物生长状况。',
+                    '平台特别设计了"云认养"功能，用户可以通过线上选择土地、认养作物、查看农事活动记录，享受专属收获。同时，农户可以通过平台发布农产品，设置价格和库存，管理订单发货。'
+                ],
+                features: [
+                    '土地认养管理系统',
+                    '农产品在线商城',
+                    '农事活动记录和推送',
+                    '视频直播和图文动态',
+                    '订单物流管理系统',
+                    '农户店铺管理后台'
+                ],
+                results: `
+                    <ul>
+                        <li>平台已对接50+家农户，上线农产品超过200种</li>
+                        <li>累计认养土地面积超过300亩</li>
+                        <li>月交易额突破20万元</li>
+                        <li>用户复购率达到65%</li>
+                    </ul>
+                `,
+                client: '四川蜀西云物联网科技有限公司',
+                completionDate: '2024年11月',
+                role: '小程序开发工程师',
+                techStack: '微信小程序原生开发, 云开发, JavaScript, WebSocket',
+                links: [
+                    { text: '小程序码', url: '#' },
+                    { text: '项目文档', url: '#' },
+                    { text: '技术博客', url: '#' }
+                ]
+            },
+            '3': {
+                title: '校园文化活动策划',
+                category: '活动策划',
+                date: '2023年7月',
+                mainImage: 'assets/project3/主图.jpg',
+                images: [
+                    'assets/project3/1.jpg',
+                    'assets/project3/2.jpg',
+                    'assets/project3/3.jpg',
+                    'assets/project3/4.jpg'
+                ],
+                description: [
+                    '这是一系列富有创意和影响力的校园文化活动策划项目。通过精心设计的活动形式和内容，为校园带来丰富多彩的文化生活。',
+                    '项目涵盖了学术讲座、文化节、艺术展览等多种形式，每个活动都经过细致的策划和执行，确保活动的质量和影响力。',
+                    '特别注重活动的创新性和参与度，通过新媒体运营和线上线下联动，提升活动的传播效果和参与体验。'
+                ],
+                features: [
+                    '活动主题策划',
+                    '流程设计与管理',
+                    '场地布置与氛围营造',
+                    '新媒体宣传推广',
+                    '现场管理与控制',
+                    '活动效果评估'
+                ],
+                results: `
+                    <ul>
+                        <li>累计策划执行活动10+场</li>
+                        <li>活动参与人数超过3000人</li>
+                        <li>活动满意度达到95%</li>
+                        <li>多个活动获得校级表彰</li>
+                    </ul>
+                `,
+                client: '四川农业大学',
+                completionDate: '2024年7月',
+                role: '活动总策划',
+                techStack: '活动策划, 现场管理, 新媒体运营, 团队协调',
+                links: [
+                    { text: '活动回顾', url: '#' },
+                    { text: '媒体报道', url: '#' }
+                ]
+            },
+            '4': {
+                title: '音乐节',
+                category: '活动策划',
+                date: '2023年12月',
+                mainImage: 'assets/project4/主图.jpg',
+                images: [
+                    'assets/project4/1.jpg',
+                    'assets/project4/1.jpg',
+                    'assets/project4/1.jpg',
+                    'assets/project4/1.jpg'
+                ],
+                description: [
+                    '这是一场为期两天的户外音乐节活动，汇集了多个知名音乐人和乐队的演出，同时设置了多个互动体验区域。',
+                    '活动通过精心的场地规划和节目编排，为观众带来了难忘的音乐体验。'
+                ],
+                features: [
+                    '多舞台现场演出',
+                    '艺人演出管理',
+                    '场地规划和搭建',
+                    '观众体验设计',
+                    '安全管理系统'
+                ],
+                results: `
+                    <ul>
+                        <li>观众人数超过5000人</li>
+                        <li>活动满意度达到92%</li>
+                        <li>成功举办15场演出</li>
+                    </ul>
+                `,
+                client: '某文化传媒公司',
+                completionDate: '2023年12月',
+                role: '项目经理',
+                techStack: '活动策划, 现场管理, 演出制作',
+                links: [
+                    { text: '活动视频', url: '#' },
+                    { text: '精彩回顾', url: '#' }
+                ]
+            }
+        };
+
+        // 加载项目数据
+        function loadProjectData() {
+            const project = projectsData[projectId];
+            if (!project) {
+                window.location.href = '/projects.html';
+                return;
+            }
+
+            // 更新页面标题
+            document.title = `${project.title} - 项目详情`;
+
+            // 更新基本信息
+            document.getElementById('projectTitle').textContent = project.title;
+            document.getElementById('projectCategory').textContent = project.category;
+            document.getElementById('projectDate').textContent = `完成时间：${project.date}`;
+
+            // 根据项目类别添加不同的样式类
+            const isSoftware = project.category.includes('软件') || project.category.includes('移动');
+            const sectionClass = isSoftware ? 'software-section' : 'event-section';
+            
+            document.getElementById('projectDescriptionSection').classList.add(sectionClass);
+            document.getElementById('projectFeaturesSection').classList.add(sectionClass);
+            document.getElementById('projectResultsSection').classList.add(sectionClass);
+            document.getElementById('projectInfoSection').classList.add(sectionClass);
+            document.getElementById('projectLinksSection').classList.add(sectionClass);
+
+            // 更改项目类别标签颜色
+            if (isSoftware) {
+                document.getElementById('projectCategory').classList.replace('bg-blue-100', 'bg-blue-100');
+                document.getElementById('projectCategory').classList.replace('text-blue-800', 'text-blue-800');
+            } else {
+                document.getElementById('projectCategory').classList.replace('bg-blue-100', 'bg-purple-100');
+                document.getElementById('projectCategory').classList.replace('text-blue-800', 'text-purple-800');
+            }
+
+            // 更新图片
+            document.getElementById('projectMainImage').src = project.mainImage;
+            for (let i = 0; i < 4; i++) {
+                if (project.images[i]) {
+                    document.getElementById(`projectImage${i+1}`).src = project.images[i];
+                }
+            }
+
+            // 更新描述
+            document.getElementById('projectDescription').innerHTML = project.description
+                .map(desc => `<div class="feature-item">
+                    ${desc}
+                </div>`)
+                .join('');
+
+            // 更新技术特点
+            document.getElementById('projectFeatures').innerHTML = project.features
+                .map(feature => `<div class="feature-item">
+                    ${feature}
+                </div>`)
+                .join('');
+
+            // 更新项目成果
+            if (project.results.includes('<ul>')) {
+                // 提取li内容
+                const liMatch = project.results.match(/<li>(.*?)<\/li>/g);
+                if (liMatch) {
+                    const resultItems = liMatch.map(li => {
+                        const content = li.replace(/<li>(.*?)<\/li>/, '$1');
+                        return `<div class="result-item">
+                            <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>${content}</span>
+                        </div>`;
+                    });
+                    document.getElementById('projectResults').innerHTML = resultItems.join('');
+                } else {
+                    document.getElementById('projectResults').innerHTML = project.results;
+                }
+            } else {
+                document.getElementById('projectResults').innerHTML = project.results;
+            }
+
+            // 更新项目信息
+            document.getElementById('projectClient').textContent = project.client;
+            document.getElementById('projectCompletionDate').textContent = project.completionDate;
+            document.getElementById('projectRole').textContent = project.role;
+            document.getElementById('projectTechStack').textContent = project.techStack;
+
+            // 更新相关链接
+            document.getElementById('projectLinks').innerHTML = project.links
+                .map(link => `<a href="${link.url}" class="flex items-center py-2 px-4 rounded-lg transition-all duration-300 hover:bg-gray-100 hover:translate-x-2">
+                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    ${link.text}
+                </a>`)
+                .join('');
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjectData();
+            initializeImageViewer();
+            
+            // 添加滚动动画
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.animate-fadeInUp').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.5s ease';
+                observer.observe(el);
+            });
+        });
+
+        // 初始化图片查看功能
+        function initializeImageViewer() {
+            const images = document.querySelectorAll('.project-image');
+            const imageViewer = document.getElementById('imageViewer');
+            const viewerImage = document.getElementById('viewerImage');
+            const closeBtn = imageViewer.querySelector('.close-btn');
+
+            images.forEach(image => {
+                image.addEventListener('click', () => {
+                    viewerImage.src = image.src;
+                    imageViewer.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            function closeViewer() {
+                imageViewer.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            closeBtn.addEventListener('click', closeViewer);
+            imageViewer.addEventListener('click', (e) => {
+                if (e.target === imageViewer) {
+                    closeViewer();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && imageViewer.classList.contains('active')) {
+                    closeViewer();
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
