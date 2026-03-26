@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR 乘区伤害计算器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>STAR 乘区伤害计算器</h1>
+            <p>不一定精确计算您的伤害输出和提升百分比</p>
+            <div class="header-buttons">
+                <button class="btn save-btn" onclick="openSaveRecordModal()">💾 保存记录</button>
+                <button class="btn history-btn" onclick="openHistoryModal()">📜 历史记录</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">参数输入</h2>
+                
+                <!-- 基础属性组 -->
+                <div class="param-group">
+                    <h3 class="group-title">基础属性</h3>
+                    <div class="param-grid">
+                        <div class="input-group compact">
+                            <label for="attack">
+                                攻击力
+                                <span class="info-icon" onclick="openAttackModal()" title="点击计算攻击力区">?</span>
+                            </label>
+                            <input type="number" id="attack" value="1000" min="0" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="multiplier">倍率</label>
+                            <input type="number" id="multiplier" value="1.5" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="damageReduction">
+                                减伤区
+                                <span class="info-icon" onclick="openDamageReductionModal()" title="点击计算减伤区">?</span>
+                            </label>
+                            <input type="number" id="damageReduction" value="1.0" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="fixedValue">固定值</label>
+                            <input type="number" id="fixedValue" value="100" min="0" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="luckProbability">
+                                幸运概率
+                                <span class="info-icon" onclick="openLuckProbabilityModal()" title="点击计算幸运概率">?</span>
+                            </label>
+                            <input type="number" id="luckProbability" value="0.0" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="luckMultiplier">
+                                幸运倍率
+                                <span class="info-icon" onclick="openLuckMultiplierModal()" title="点击计算幸运倍率">?</span>
+                            </label>
+                            <input type="number" id="luckMultiplier" value="0.4" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 攻击加成组 -->
+                <div class="param-group">
+                    <h3 class="group-title">攻击加成</h3>
+                    <div class="param-grid">
+                        <div class="input-group compact">
+                            <label for="refineAttack">精炼攻击</label>
+                            <input type="number" id="refineAttack" value="200" min="0" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="elementAttack">元素攻击</label>
+                            <input type="number" id="elementAttack" value="300" min="0" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 系数设置 -->
+                <div class="param-group coefficient-group">
+                    <h3 class="group-title">系数设置</h3>
+                    <div class="param-grid">
+                        <div class="input-group compact">
+                            <label for="coefficientM">
+                                系数 M
+                                <span class="info-icon" onclick="openCoefficientModal()" title="点击计算系数">?</span>
+                            </label>
+                            <input type="number" id="coefficientM" value="1.0" min="0" step="0.01" placeholder="输入M系数">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="coefficientN">
+                                系数 N
+                                <span class="info-icon" onclick="openCoefficientModal()" title="点击计算系数">?</span>
+                            </label>
+                            <input type="number" id="coefficientN" value="1.0" min="0" step="0.01" placeholder="输入N系数">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 乘区设置 -->
+                <div class="param-group">
+                    <h3 class="group-title">乘区设置</h3>
+                    <div class="param-grid">
+                        <div class="input-group compact">
+                            <label for="damageIncrease">
+                                增伤
+                                <span class="info-icon" onclick="openDamageIncreaseModal()" title="点击计算增伤">?</span>
+                            </label>
+                            <input type="number" id="damageIncrease" value="1.2" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="elementDamage">
+                                元素伤害
+                                <span class="info-icon" onclick="openElementDamageModal()" title="点击计算元素伤害乘区">?</span>
+                            </label>
+                            <input type="number" id="elementDamage" value="1.3" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="versatility">
+                                全能增幅
+                                <span class="info-icon" onclick="openVersatilityModal()" title="点击计算全能增幅">?</span>
+                            </label>
+                            <input type="number" id="versatility" value="1.1" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="vulnerability">易伤</label>
+                            <input type="number" id="vulnerability" value="1.15" min="0" step="0.01">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="expectedCrit">
+                                爆伤期望
+                                <span class="info-icon" onclick="openCritModal()" title="点击计算暴击期望">?</span>
+                            </label>
+                            <input type="number" id="expectedCrit" value="1.4" min="0" step="0.01">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h2 class="section-title">计算结果</h2>
+                
+                <div class="result-card">
+                    <h3>最终伤害</h3>
+                    <div class="result-value" id="finalDamage">0</div>
+                </div>
+
+                <div class="formula-display" id="formulaDisplay">
+                    计算公式将在这里显示
+                </div>
+
+                <div class="comparison-section">
+                    <h3>提升百分比分析</h3>
+                    <div class="comparison-input">
+                        <div class="input-group compact">
+                            <label for="baseDamage">基准伤害</label>
+                            <input type="number" id="baseDamage" value="1000" min="0" step="1">
+                        </div>
+                        <div class="input-group compact">
+                            <label for="newDamage">当前伤害</label>
+                            <input type="number" id="newDamage" value="0" min="0" step="1" readonly>
+                        </div>
+                    </div>
+                    <div class="comparison-result" id="percentageIncrease">
+                        提升百分比: 0%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 攻击力计算弹窗 -->
+    <div id="attackModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAttackModal()">&times;</span>
+            <h2>攻击力区计算</h2>
+            
+            <!-- 默认项目：固定值和主属性转化 -->
+            <div class="attack-sections">
+                <div class="attack-item">
+                    <div class="input-group">
+                        <label for="attackFixed">固定值</label>
+                        <input type="number" id="attackFixed" value="1000" min="0" step="1" placeholder="输入固定攻击力数值">
+                    </div>
+                </div>
+                
+                <div class="attack-item">
+                    <div class="input-group">
+                        <label for="attackMainStatTransform">
+                            主属性转化
+                            <span class="info-icon" onclick="openMainStatTransformModal()" title="点击计算主属性转化">?</span>
+                        </label>
+                        <input type="number" id="attackMainStatTransform" value="0" min="0" step="1" placeholder="输入主属性转化数值">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-result" id="attackResult">
+                攻击力区: 1000
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyAttackResult()">应用到主界面</button>
+                <button class="btn btn-secondary" onclick="closeAttackModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>攻击力区计算公式：</strong><br>
+                        攻击力区 = 固定值 + 主属性转化<br>
+                        <strong>示例：</strong>固定值1000，主属性转化500 → 攻击力区 = 1000 + 500 = 1500
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主属性转化计算子弹窗 -->
+    <div id="mainStatTransformModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMainStatTransformModal()">&times;</span>
+            <h2>主属性转化计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="mainStatValue">主属性</label>
+                    <input type="number" id="mainStatValue" value="1000" min="0" step="1" placeholder="输入主属性数值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="gCoefficient">G系数</label>
+                    <input type="number" id="gCoefficient" value="1.0" min="0" step="0.01" placeholder="输入G系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="mainStatTransformResult">
+                    主属性转化: 1000
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyMainStatTransformResult()">应用主属性转化</button>
+                <button class="btn btn-secondary" onclick="closeMainStatTransformModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>主属性转化计算公式：</strong><br>
+                        主属性转化 = 主属性 × G<br>
+                        <strong>示例：</strong>主属性1000，G=1.5 → 主属性转化 = 1000 × 1.5 = 1500
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 暴击计算弹窗 -->
+    <div id="critModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCritModal()">&times;</span>
+            <h2>暴击期望计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="critRate">暴击率 (%)</label>
+                    <input type="number" id="critRate" value="25" min="0" max="100" step="0.1" placeholder="输入暴击率百分比">
+                </div>
+                
+                <div class="input-group">
+                    <label for="critDamage">暴击伤害 (%)</label>
+                    <input type="number" id="critDamage" value="150" min="100" step="0.1" placeholder="输入暴击伤害百分比">
+                </div>
+            </div>
+            
+            <div class="modal-result" id="critResult">
+                期望暴击伤害: 1.00
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyCritResult()">应用到主界面</button>
+                <button class="btn btn-secondary" onclick="closeCritModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>计算公式：</strong><br>
+                        期望暴击伤害 = 1 + (暴击率/100) × (暴击伤害/100 - 1)<br>
+                        <strong>示例：</strong>25%暴击率，150%暴击伤害 = 1 + 0.25 × (1.5 - 1) = 1.125
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全能增幅计算弹窗 -->
+    <div id="versatilityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeVersatilityModal()">&times;</span>
+            <h2>全能增幅计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="versatilityFixed">固定值</label>
+                    <input type="number" id="versatilityFixed" value="0" min="0" step="0.01" placeholder="输入固定全能值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="versatilityAcquired">获取量</label>
+                    <input type="number" id="versatilityAcquired" value="500" min="0" step="1" placeholder="输入全能获取量">
+                </div>
+                
+                <div class="input-group">
+                    <label for="versatilityQ">Q系数</label>
+                    <input type="number" id="versatilityQ" value="1.0" min="0" step="0.01" placeholder="输入Q系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="versatilityResult">
+                    全能乘区: 1.00
+                </div>
+                <div class="modal-result" id="versatilityAmplificationResult">
+                    全能增幅乘区: 1.00
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyVersatilityResult()">应用全能增幅到主界面</button>
+                <button class="btn btn-secondary" onclick="closeVersatilityModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>全能计算公式：</strong><br>
+                        全能乘区 = 1 + 固定值 + (获取量 / (获取量 + 11200))<br>
+                        <strong>全能增幅计算公式：</strong><br>
+                        全能增幅乘区 = 1 + [固定值 + (获取量 / (获取量 + 11200))] × Q<br>
+                        <strong>示例：</strong>固定值0，获取量500，Q=1.0 → 全能增幅 = 1 + [0 + (500 / 11700)] × 1.0 = 1.043
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 幸运概率计算弹窗 -->
+    <div id="luckProbabilityModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLuckProbabilityModal()">&times;</span>
+            <h2>幸运概率计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="luckProbabilityFixed">固定值</label>
+                    <input type="number" id="luckProbabilityFixed" value="0" min="0" step="0.01" placeholder="输入固定幸运概率值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="luckProbabilityAcquired">获取量</label>
+                    <input type="number" id="luckProbabilityAcquired" value="500" min="0" step="1" placeholder="输入幸运获取量">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="luckProbabilityResult">
+                    幸运概率: 0.00
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyLuckProbabilityResult()">应用幸运概率到主界面</button>
+                <button class="btn btn-secondary" onclick="closeLuckProbabilityModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>幸运概率计算公式：</strong><br>
+                        幸运概率 = 固定值 + (获取量 / (获取量 + 19975))<br>
+                        <strong>示例：</strong>固定值0，获取量500 → 幸运概率 = 0 + (500 / 20475) = 0.024
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 幸运倍率计算弹窗 -->
+    <div id="luckMultiplierModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLuckMultiplierModal()">&times;</span>
+            <h2>幸运倍率计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="luckMultiplierBase">固定值(40%)</label>
+                    <input type="number" id="luckMultiplierBase" value="0.4" min="0" step="0.01" placeholder="输入基础倍率">
+                </div>
+                
+                <div class="input-group">
+                    <label for="luckMultiplierProbability">幸运概率</label>
+                    <input type="number" id="luckMultiplierProbability" value="0" min="0" step="0.01" placeholder="输入幸运概率值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="luckMultiplierX">X系数</label>
+                    <input type="number" id="luckMultiplierX" value="1.0" min="0.01" step="0.01" placeholder="输入X系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="luckMultiplierResult">
+                    幸运倍率: 0.40
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyLuckMultiplierResult()">应用幸运倍率到主界面</button>
+                <button class="btn btn-secondary" onclick="closeLuckMultiplierModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>幸运倍率计算公式：</strong><br>
+                        幸运倍率 = 固定值40% + 幸运概率/X<br>
+                        <strong>示例：</strong>幸运概率0.1，X=1.0 → 幸运倍率 = 0.4 + 0.1/1.0 = 0.5
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 雷印计算弹窗 -->
+    <div id="thunderMarkModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeThunderMarkModal()">&times;</span>
+            <h2>雷印计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="thunderMarkCount">雷印个数</label>
+                    <input type="number" id="thunderMarkCount" value="10" min="0" step="1" placeholder="输入雷印个数">
+                </div>
+                
+                <div class="input-group">
+                    <label for="thunderMarkPercent">雷印百分比 (%)</label>
+                    <input type="number" id="thunderMarkPercent" value="10" min="0" step="0.1" placeholder="输入雷印百分比">
+                </div>
+            </div>
+            
+            <div class="modal-result" id="thunderMarkResult">
+                雷印值: 1.00
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyThunderMarkResult()">应用到雷印输入</button>
+                <button class="btn btn-secondary" onclick="closeThunderMarkModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>计算公式：</strong><br>
+                        雷印值 = 个数 × (百分比/100)<br>
+                        <strong>示例：</strong>10个雷印，每个10% = 10 × (10/100) = 1.0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 精通增幅计算弹窗 -->
+    <div id="masteryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMasteryModal()">&times;</span>
+            <h2>精通增幅计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="masteryModalFixed">固定值</label>
+                    <input type="number" id="masteryModalFixed" value="0" min="0" step="0.01" placeholder="输入精通固定值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="masteryModalAcquired">获取量</label>
+                    <input type="number" id="masteryModalAcquired" value="1000" min="0" step="1" placeholder="输入精通获取量">
+                </div>
+                
+                <div class="input-group">
+                    <label for="masteryModalJ">J系数</label>
+                    <input type="number" id="masteryModalJ" value="1.0" min="0" step="0.01" placeholder="输入J系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="masteryModalResult">
+                    精通乘区: 1.00
+                </div>
+                <div class="modal-result" id="masteryAmplificationResult">
+                    精通增幅乘区: 1.00
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyMasteryModalResult()">应用精通增幅到精通输入</button>
+                <button class="btn btn-secondary" onclick="closeMasteryModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>精通计算公式：</strong><br>
+                        精通乘区 = 固定值 + (获取量 / (获取量 + 19975))<br>
+                        <strong>精通增幅计算公式：</strong><br>
+                        精通增幅乘区 = 1 + [固定值 + (获取量 / (获取量 + 19975))] × J<br>
+                        <strong>示例：</strong>固定值0，获取量1000，J=1.0 → 精通增幅 = 1 + [0 + (1000 / 20975)] × 1.0 = 1.047
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 增伤计算弹窗 -->
+    <div id="damageIncreaseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDamageIncreaseModal()">&times;</span>
+            <h2>增伤计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="bossIncrease">首领增伤 (%)</label>
+                    <input type="number" id="bossIncrease" value="0" min="0" step="0.1" placeholder="输入首领增伤百分比">
+                </div>
+                
+                <div class="input-group">
+                    <label for="distanceIncrease">近/远距离加成 (%)</label>
+                    <input type="number" id="distanceIncrease" value="0" min="0" step="0.1" placeholder="输入距离加成百分比">
+                </div>
+                
+                <div class="dynamic-damage-increases" id="dynamicDamageIncreases">
+                    <!-- 动态添加的增伤项目将在这里显示 -->
+                </div>
+                
+                <div class="add-damage-section">
+                    <button class="btn btn-small" onclick="openDamageIncreaseItemModal()">添加增伤项目</button>
+                </div>
+            </div>
+            
+            <div class="modal-result" id="damageIncreaseResult">
+                增伤乘区: 1.00
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyDamageIncreaseResult()">应用到主界面</button>
+                <button class="btn btn-secondary" onclick="closeDamageIncreaseModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>计算公式：</strong><br>
+                        增伤乘区 = 1 + 首领增伤百分比/100 + 近/远距离加成百分比/100 + 其他增伤百分比/100<br>
+                        <strong>示例：</strong>首领增伤20%，距离加成10%，其他15% = 1 + 0.2 + 0.1 + 0.15 = 1.45
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 减伤区计算弹窗 -->
+    <div id="damageReductionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDamageReductionModal()">&times;</span>
+            <h2>减伤区计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="defenseValue">防御值</label>
+                    <input type="number" id="defenseValue" value="1000" min="0" step="1" placeholder="输入防御值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="damageReductionF">F系数</label>
+                    <input type="number" id="damageReductionF" value="1.0" min="0" step="0.01" placeholder="输入F系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="defenseZoneResult">
+                    防御区: 1.00
+                </div>
+                <div class="modal-result" id="damageReductionResult">
+                    减伤区: 1.00
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyDamageReductionResult()">应用减伤区到主界面</button>
+                <button class="btn btn-secondary" onclick="closeDamageReductionModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>防御区计算公式：</strong><br>
+                        防御区 = 防御值 / (防御值 + 6500)<br>
+                        <strong>减伤区计算公式：</strong><br>
+                        减伤区 = 1 - 防御值 × F / (防御值 × F + 6500)<br>
+                        <strong>示例：</strong>防御值1000，F=0.8 → 防御区 = 1000 / 7500 = 0.1333 → 减伤区 = 1 - 800 / 7300 = 0.8904
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 元素伤害计算弹窗 -->
+    <div id="elementDamageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeElementDamageModal()">&times;</span>
+            <h2>元素伤害乘区计算</h2>
+            
+            <!-- 默认项目：固定值和精通转化 -->
+            <div class="element-damage-sections">
+                <div class="element-damage-item">
+                    <div class="input-group">
+                        <label for="elementDamageFixed">固定值 (%)</label>
+                        <input type="number" id="elementDamageFixed" value="0" min="0" step="0.1" placeholder="输入百分比数值">
+                    </div>
+                </div>
+                
+                <div class="element-damage-item">
+                    <div class="input-group">
+                        <label for="elementDamageMasteryTransform">
+                            精通转化 (%)
+                            <span class="info-icon" onclick="openMasteryTransformModal()" title="点击计算精通转化">?</span>
+                        </label>
+                        <input type="number" id="elementDamageMasteryTransform" value="0" min="0" step="0.1" placeholder="输入百分比数值">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 其他项目区域 -->
+            <div class="dynamic-damage-increases" id="dynamicElementDamageItems">
+                <!-- 动态元素伤害项目将在这里显示 -->
+            </div>
+            
+            <div class="add-damage-section">
+                <button class="btn btn-small" onclick="openElementDamageItemModal()">添加增伤项目</button>
+            </div>
+            
+            <div class="modal-result" id="elementDamageResult">
+                元素伤害乘区: 1.00
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyElementDamageResult()">应用到主界面</button>
+                <button class="btn btn-secondary" onclick="closeElementDamageModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>元素伤害乘区计算公式：</strong><br>
+                        元素伤害乘区 = 1 + 固定值百分比/100 + 精通转化百分比/100 + 其他项目百分比/100<br>
+                        <strong>示例：</strong>固定值10%，精通转化20%，其他项目5% → 元素伤害乘区 = 1 + 10/100 + 20/100 + 5/100 = 1.35
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 精通转化计算子弹窗 -->
+    <div id="masteryTransformModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMasteryTransformModal()">&times;</span>
+            <h2>精通转化计算</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="masteryTransformFixed">固定值</label>
+                    <input type="number" id="masteryTransformFixed" value="0" min="0" step="0.01" placeholder="输入固定值">
+                </div>
+                
+                <div class="input-group">
+                    <label for="masteryTransformAcquired">精通获取量</label>
+                    <input type="number" id="masteryTransformAcquired" value="1000" min="0" step="1" placeholder="输入精通获取量">
+                </div>
+                
+                <div class="input-group">
+                    <label for="masteryTransformY">Y系数</label>
+                    <input type="number" id="masteryTransformY" value="1.0" min="0" step="0.01" placeholder="输入Y系数">
+                </div>
+            </div>
+            
+            <div class="modal-results">
+                <div class="modal-result" id="masteryZoneResult">
+                    精通乘区: 1.00
+                </div>
+                <div class="modal-result" id="masteryTransformResult">
+                    精通转化: 1.00
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="applyMasteryTransformResult()">应用精通转化</button>
+                <button class="btn btn-secondary" onclick="closeMasteryTransformModal()">取消</button>
+            </div>
+            
+            <div class="formula-info">
+                <div class="formula-toggle" onclick="toggleFormula(this)">
+                    <span class="formula-icon">📝</span>
+                    <span class="formula-text">计算公式</span>
+                </div>
+                <div class="formula-content">
+                    <div class="formula-details">
+                        <strong>精通乘区计算公式：</strong><br>
+                        精通乘区 = 固定值 + (获取量 / (获取量 + 19975))<br>
+                        <strong>精通转化计算公式：</strong><br>
+                        精通转化 = [固定值 + (获取量 / (获取量 + 19975))] × Y × 100%<br>
+                        <strong>示例：</strong>固定值0，获取量1000，Y=1.0 → 精通转化 = [0 + (1000 / 20975)] × 1.0 × 100% = 4.77%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 元素伤害项目添加弹窗 -->
+    <div id="elementDamageItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeElementDamageItemModal()">&times;</span>
+            <h2>添加元素伤害项目</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="newElementDamageItemName">项目名称</label>
+                    <input type="text" id="newElementDamageItemName" placeholder="输入项目名称，如：天赋加成、套装效果等">
+                </div>
+                <div class="input-group">
+                    <label for="newElementDamageItemValue">增加值</label>
+                    <input type="number" id="newElementDamageItemValue" value="0" step="0.1" placeholder="输入百分比数值">
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="addElementDamageItem()">添加项目</button>
+                <button class="btn btn-secondary" onclick="closeElementDamageItemModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 增伤项目添加弹窗 -->
+    <div id="damageIncreaseItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDamageIncreaseItemModal()">&times;</span>
+            <h2>添加增伤项目</h2>
+            
+            <div class="modal-inputs">
+                <div class="input-group">
+                    <label for="newDamageIncreaseItemName">项目名称</label>
+                    <input type="text" id="newDamageIncreaseItemName" placeholder="输入项目名称，如：专精技能加成、物理/魔法伤害加成等">
+                </div>
+                <div class="input-group">
+                    <label for="newDamageIncreaseItemValue">增加值</label>
+                    <input type="number" id="newDamageIncreaseItemValue" value="0" step="0.1" placeholder="输入百分比数值">
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="addDamageIncreaseFromModal()">添加项目</button>
+                <button class="btn btn-secondary" onclick="closeDamageIncreaseItemModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系数计算弹窗 -->
+    <div id="coefficientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCoefficientModal()">&times;</span>
+            <h2>系数计算</h2>
+            
+            <!-- 职业选择页面 -->
+            <div id="jobSelection" class="job-selection">
+                <h3>选择职业</h3>
+                <div class="job-buttons">
+                    <button class="job-btn" onclick="selectJob('thunderblade')">雷影剑士</button>
+                    <button class="job-btn" onclick="selectJob('other')">其他职业</button>
+                </div>
+            </div>
+
+            <!-- 雷影剑士计算页面 -->
+            <div id="thunderbladeCalculation" class="job-calculation" style="display: none;">
+                <h3>雷影剑士 - 系数计算</h3>
+                
+                <div class="coefficient-calculation">
+                    <div class="input-group">
+                        <label for="thunderMark">
+                            雷印
+                            <span class="info-icon" onclick="openThunderMarkModal()" title="点击计算雷印">?</span>
+                        </label>
+                        <input type="number" id="thunderMark" value="1.0" min="0" step="0.01" placeholder="输入雷印数值">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="mastery">
+                            精通增幅
+                            <span class="info-icon" onclick="openMasteryModal()" title="点击计算精通增幅">?</span>
+                        </label>
+                        <input type="number" id="mastery" value="1.0" min="0" step="0.01" placeholder="输入精通增幅数值">
+                    </div>
+                </div>
+
+                <!-- 系数计算区域 -->
+                <div class="coefficient-calculation-section">
+                    <h4>系数计算 (雷印 + 精通增幅)</h4>
+                    <div class="coefficient-preview">
+                        <div class="preview-item">
+                            <span class="preview-label">雷印:</span>
+                            <span class="preview-value" id="thunderMarkPreview">1.00</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">精通增幅:</span>
+                            <span class="preview-value" id="masteryPreview">1.00</span>
+                        </div>
+                        <div class="preview-item preview-total">
+                            <span class="preview-label">总计:</span>
+                            <span class="preview-value" id="totalPreview">2.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="coefficient-results">
+                    <div class="coefficient-assignment">
+                        <h4>系数分配</h4>
+                        <div class="assignment-controls">
+                            <div class="assignment-item">
+                                <label>系数 M:</label>
+                                <input type="number" id="coefficientMLocal" value="2.0" min="0" step="0.01" placeholder="输入M系数">
+                            </div>
+                            <div class="assignment-item">
+                                <label>系数 N:</label>
+                                <input type="number" id="coefficientNLocal" value="2.0" min="0" step="0.01" placeholder="输入N系数">
+                            </div>
+                            <div class="assignment-buttons">
+                                <button class="btn btn-small" onclick="copyTotalToBoth()">复制总计到M、N</button>
+                                <button class="btn btn-small" onclick="copyTotalToM()">复制总计到M</button>
+                                <button class="btn btn-small" onclick="copyTotalToN()">复制总计到N</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="btn" onclick="applyCoefficientResult()">应用到主界面</button>
+                    <button class="btn btn-secondary" onclick="backToJobSelection()">返回职业选择</button>
+                    <button class="btn btn-secondary" onclick="closeCoefficientModal()">取消</button>
+                </div>
+            </div>
+
+            <!-- 其他职业页面 -->
+            <div id="otherCalculation" class="job-calculation" style="display: none;">
+                <h3>其他职业</h3>
+                <p>该职业的计算公式还未确定，请手动输入系数值。</p>
+                
+                <div class="coefficient-reset-options">
+                    <h4>系数重置选项</h4>
+                    <div class="reset-buttons">
+                        <button class="btn btn-small" onclick="resetCoefficientsToOne()">重置M、N为1</button>
+                        <button class="btn btn-small btn-secondary" onclick="resetOnlyM()">重置M为1</button>
+                        <button class="btn btn-small btn-secondary" onclick="resetOnlyN()">重置N为1</button>
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="backToJobSelection()">返回职业选择</button>
+                    <button class="btn btn-secondary" onclick="closeCoefficientModal()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存记录弹窗 -->
+    <div id="saveRecordModal" class="modal">
+        <div class="modal-content save-record-modal">
+            <span class="close" onclick="closeSaveRecordModal()">&times;</span>
+            <h2>💾 保存计算记录</h2>
+            
+            <div class="save-record-form">
+                <div class="input-group">
+                    <label for="recordName">记录名称</label>
+                    <input type="text" id="recordName" placeholder="请输入记录名称，如：高攻击配置、PVP配置等" maxlength="50">
+                </div>
+                
+                <div class="current-parameters">
+                    <h3>当前参数预览</h3>
+                    <div class="parameter-preview" id="parameterPreview">
+                        <!-- 参数预览将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="saveCurrentRecord()">💾 保存记录</button>
+                <button class="btn btn-secondary" onclick="closeSaveRecordModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史记录弹窗 -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content history-modal">
+            <span class="close" onclick="closeHistoryModal()">&times;</span>
+            <h2>📜 计算历史记录</h2>
+            
+            <div class="history-controls">
+                <div class="history-info">
+                    <span>共 <span id="historyCount">0</span> 条记录</span>
+                </div>
+                <div class="history-buttons">
+                    <button class="btn btn-small btn-warning" onclick="clearHistory()">🗑️ 清空历史</button>
+                    <button class="btn btn-small" onclick="exportHistory()">📋 导出记录</button>
+                </div>
+            </div>
+            
+            <div class="history-list" id="historyList">
+                <div class="history-empty">
+                    <p>暂无计算历史记录</p>
+                    <p>进行伤害计算后，记录将自动保存到这里</p>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeHistoryModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 应用数据详情弹窗 -->
+    <div id="applyDataModal" class="modal">
+        <div class="modal-content apply-data-modal">
+            <span class="close" onclick="closeApplyDataModal()">&times;</span>
+            <h2>✅ 数据应用成功</h2>
+            
+            <div class="apply-data-content">
+                <div class="apply-summary">
+                    <h3 id="applySummaryTitle">数据应用详情</h3>
+                    <p id="applySummaryText">已成功应用记录数据</p>
+                </div>
+                
+                <div class="applied-data-list" id="appliedDataList">
+                    <!-- 应用的数据详情将在这里显示 -->
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeApplyDataModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚信息 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Star Calculator by 无雨沦比/Aerame</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="modals.js"></script>
+</body>
+</html> 
