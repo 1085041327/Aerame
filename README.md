@@ -24,34 +24,6 @@ Star app/
 5. 使用💾保存记录按钮手动保存当前配置
 6. 使用📊历史记录按钮查看、应用和管理历史记录
 
-## 🌐 GitHub Pages 一键发布（仓库名：`Aerame`）
-
-本项目已内置 GitHub Pages 自动部署工作流，上传后可直接发布成网页。
-
-### 1) 上传代码到 GitHub 仓库
-
-- 仓库名使用：`Aerame`
-- 默认分支建议：`main`
-- 保留项目根目录下的 `index.html`（当前已满足）
-
-### 2) 在 GitHub 启用 Pages
-
-进入仓库 `Settings` -> `Pages`：
-
-- `Source` 选择：`GitHub Actions`
-- 保存后，首次推送会自动触发部署
-
-### 3) 等待 Actions 完成
-
-- 进入仓库 `Actions` 页面
-- 等待 `Deploy static site to GitHub Pages` 工作流成功
-- 成功后可在 `Pages` 页面看到你的网站地址
-
-### 4) 你的访问地址格式
-
-- 项目页地址通常为：`https://<你的GitHub用户名>.github.io/Aerame/`
-
-> 说明：项目已添加 `.nojekyll`，可避免 GitHub Pages 的 Jekyll 处理影响静态资源。
 
 ## ⚙️ 功能特性
 
